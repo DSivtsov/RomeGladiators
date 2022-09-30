@@ -1,0 +1,31 @@
+2DBlen_ReTargtTurn Controller
+ - Appply root animation (the most part of time is turned off, see below the ApplyRootMotionToClip.cs)
+ - Update mode Normal (all animation switching is done in Update())
+ - Switching an animation states by parameters and the "Exite time" parameter
+
+Base
+BlendTree 2D Freedom Directional
+Idle
+Walk (Left, Normal, Right)
+Run (Left, Normal, Right)
+Exist possibility to use for BackWard move the Walk & Run with speed -1
+The Values Automaticle Update throught UpdatePlayerAnimatorController script
+
+Intergation Animatation (feedback control) with the Controler State Machine (PlayerControler.cs) throught use the Animatation Event -  AnimationEvents.cs attached to Character GameObject, are used (properties and method):
+
+	public bool BeginCanJumpNow - Used by "Jump From Idle", "<*>WalkJump", "<*>RunJump" to initiate the set positive vertical speed (by Axis Y) for Character GameObject
+	
+    public bool BeginFalling - Used by "Jump From Idle", "Falling" to initiate the Tranistion to "Falling" Sub-States
+	
+    public bool BeginReadyWalking - Used by "<All>Jump" & "Falling" to initiate the Tranistion to "Initial BlendTree" after jumps and falls
+	
+	public void RunJump(Object sideEvent) which used as parameter the AnimationEventSO ScriptableObjects ("Enum Objects": EventLeft, EventRight, None) for initiate (enable) Jumps with right side and at the correct moment ("correct foot are on the ground")
+
+Additionally the ApplyRootMotionToClip.cs used to turn Root node motion for "TurnRight" animation - the turn on place from "Idle state".
+
+Note.
+The Existing problems:
+	The "Jump Walking" animation used the animation "jumping by sideways from a walk cycle with a rifle in hands" (In the source animation was masked the hands and head).
+
+	The "Jump from Idle" ("Jump Up" animation) root node at Y=0.917 and the root motion up till Y=1.54. The target animaition "Falling Idle" have root node at Y=0.97. The root motion of "Jump from Idle" was turned off (Back in pose = off & "root motion is off"). The transition to "Falling Idle" are made more longer,  in the trasition are existed the little shift of Character to up. All other animations which are included in the "Jump from idle" animation the "baked in pose" parameter are turn on.
+
