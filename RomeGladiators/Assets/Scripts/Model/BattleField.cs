@@ -4,6 +4,7 @@ using UnityEngine.AI;
 
 public class BattleField
 {
+    private const int GladiatorYPos = 1;
     private Vector3 worldPositionZerro;
     private int maxRNDX;
     private int maxRNDZ;
@@ -12,21 +13,21 @@ public class BattleField
 
     private System.Random random;
 
-    public BattleField(int seed)
+    public BattleField()
     {
         this.worldPositionZerro = SingletonGladiatorsManager.Instance.BattfleFieldData.WordldPosZerro;
         this.maxRNDX = SingletonGladiatorsManager.Instance.BattfleFieldData.MaxPosX + 1;
         this.maxRNDZ = SingletonGladiatorsManager.Instance.BattfleFieldData.MaxPosZ + 1;
         this.minRNDX = SingletonGladiatorsManager.Instance.BattfleFieldData.MinPosX;
         this.minRNDZ = SingletonGladiatorsManager.Instance.BattfleFieldData.MinPosZ;
-        if (seed != 0)
-            this.random = new System.Random(seed);
+        if (SingletonGladiatorsManager.Instance.RandomSeedPos != 0)
+            this.random = new System.Random(SingletonGladiatorsManager.Instance.RandomSeedPos);
         else
             this.random = new System.Random();
     }
 
     private Vector3 GetRandomPositionOnField() => worldPositionZerro + 
-        new Vector3(random.Next(minRNDX,maxRNDX), 0, random.Next(minRNDZ, maxRNDZ));
+        new Vector3(random.Next(minRNDX,maxRNDX), GladiatorYPos, random.Next(minRNDZ, maxRNDZ));
 
     private bool PositionOnFieldNotWalkable(Vector3 newPos)
     {

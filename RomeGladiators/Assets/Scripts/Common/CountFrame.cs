@@ -36,6 +36,8 @@ public class CountFrame : MonoBehaviour
     [System.Diagnostics.Conditional("UNITY_EDITOR")]
     public static void DebugLogUpdate(string str) => Debug.Log($"[U#{currentNumUpdateFrame}] " + str);
 
+    public static void DebugErrorLogUpdate(string str) => Debug.LogError($"[U#{currentNumUpdateFrame}] " + str);
+
     [System.Diagnostics.Conditional("UNITY_EDITOR")]
     public static void DebugLogUpdate(MonoBehaviour _this, string str) => Debug.Log($"[U#{currentNumUpdateFrame}] {_this} [{_this.gameObject.scene.name}] " + str);
 

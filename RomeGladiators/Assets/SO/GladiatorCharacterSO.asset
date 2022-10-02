@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9067bd3969d4f34a8b259599c64fadb, type: 3}
   m_Name: GladiatorCharacterSO
   m_EditorClassIdentifier: 
-  _minHealth: 15
-  _maxHealth: 75
+  _minHealth: 69
+  _maxHealth: 97
   _minAttackForce: 5
-  _maxAttackForce: 15
+  _maxAttackForce: 10

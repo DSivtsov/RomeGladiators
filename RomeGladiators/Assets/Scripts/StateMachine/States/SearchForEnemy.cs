@@ -4,25 +4,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class SearchForEnemy : IState
+public class SearchForEnemy : BaseState
 {
-    private readonly Gladiator _gladiator;
-    private readonly NavMeshAgent _navMeshAgent;
+    //private readonly Gladiator _gladiator;
 
-    public SearchForEnemy(Gladiator gladiator, NavMeshAgent navMeshAgent)
+    public SearchForEnemy(Gladiator gladiator) : base(gladiator) { }
+
+    public override void Tick()
     {
-        _gladiator = gladiator;
-        _navMeshAgent = navMeshAgent;
-    }
-    public void Tick()
-    {
-        Debug.Log($"IndexOf(_gladiator)={SingletonGladiatorsManager.Instance.ListGladiators.IndexOf(_gladiator)}");
-        _gladiator.Target =
-            MoveToClosestTarget.ChooseTarget(SingletonGladiatorsManager.Instance.ListGladiators.IndexOf(_gladiator),
-            _navMeshAgent.areaMask);
-        Debug.Log($"[{_gladiator.name}] my Enemy is {_gladiator.Target.name}");
+        _gladiator.Target = MoveToClosestTarget.ChooseTarget(SingletonGladiatorsManager.Instance.IdxCurrentGladiator);
+        CountFrame.DebugLogUpdate($"[{_gladiator.name}] my Enemy is {_gladiator.Target.name}");
     }
 
-    public void OnEnter() { }
-    public void OnExit() { }
 }

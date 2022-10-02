@@ -12,4 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d31fd872b9aee47468bf4dd5deb7898b, type: 3}
   m_Name: BattfleFieldSO
   m_EditorClassIdentifier: 
-  _groundTransform: {fileID: 0}
+  MinPosX: 1
+  MinPosZ: 1
+  MaxPosX: 99
+  MaxPosZ: 99
+  WordldPosZerro: {x: -50, y: 0, z: -50}

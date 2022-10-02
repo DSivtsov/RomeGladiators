@@ -1,24 +1,27 @@
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.AI;
+using System;
 
 public static class MoveToClosestTarget
 {
-    //private static Transform[] Targets;
-    //private static NavMeshAgent Agent;
-    private static bool firstCall;
+    //Std agentAreaMask
+    private static int agentAreaMask = NavMesh.AllAreas;
+    private static bool firstSMTick = false;
 
     private static List<Gladiator> _listGladiators;
+    private static HashSet<int> _diedGladiatorsInCurrentSMTick;
     private static Vector3[] tempArr;
 
     static MoveToClosestTarget()
     {
         _listGladiators = SingletonGladiatorsManager.Instance.ListGladiators;
-        firstCall = true;
+        _diedGladiatorsInCurrentSMTick = SingletonGladiatorsManager.Instance.DiedGladiatorsInCurrentSMTick;
     }
 
-    private static void InitTempArrays()
+    public static void InitTempArraysForFirstStateMachineTick()
     {
+        CountFrame.DebugLogUpdate("ChooseTarget() : InitTempArraysForFirstStateMachineTick()");
         tempArr = new Vector3[_listGladiators.Count];
         for (int i = 0; i < tempArr.Length; i++)
         {
@@ -26,23 +29,26 @@ public static class MoveToClosestTarget
         }
     }
 
-    public static Gladiator ChooseTarget(int idxObject, int agentAreaMask)
+    public static Gladiator ChooseTarget(int idxObject)
     {
-        if (firstCall)
-            InitTempArrays();
-        Vector3 positionObject = firstCall ? tempArr[idxObject] : _listGladiators[idxObject].transform.position;
+        if (firstSMTick)
+            CountFrame.DebugLogUpdate("ChooseTarget() : firstCall = true");
+        else
+            CountFrame.DebugLogUpdate($"ChooseTarget() : firstCall = false CountGladiatorsCount={_listGladiators.Count}");
+        Vector3 positionObject = firstSMTick ? tempArr[idxObject] : _listGladiators[idxObject].transform.position;
         float closestTargetDistance = float.MaxValue;
         NavMeshPath Path;
-        //NavMeshPath ShortestPath = null;
         Gladiator closestTarget = _listGladiators[0];
         Path = new NavMeshPath();
         Vector3 position;
-        for (int i = 0; i < _listGladiators.Count; i++)
+        // idxGladiator - index gladiator in current state of _listGladiators
+        for (int idxGladiator = 0; idxGladiator < _listGladiators.Count; idxGladiator++)
         {
-            if (i == idxObject)
+            if ( idxGladiator == idxObject ||
+                (_diedGladiatorsInCurrentSMTick.Count != 0 && _diedGladiatorsInCurrentSMTick.Contains(idxGladiator)) )
                 continue;
             Path.ClearCorners();
-            position = firstCall ? tempArr[i] : _listGladiators[i].transform.position;
+            position = firstSMTick ? tempArr[idxGladiator] : _listGladiators[idxGladiator].transform.position;
             if (NavMesh.CalculatePath(positionObject, position, agentAreaMask, Path))
             {
                 float distance = Vector3.Distance(positionObject, Path.corners[0]);
@@ -55,13 +61,12 @@ public static class MoveToClosestTarget
                 if (distance < closestTargetDistance)
                 {
                     closestTargetDistance = distance;
-                    //ShortestPath = Path;
-                    closestTarget = _listGladiators[i];
+                    closestTarget = _listGladiators[idxGladiator];
                 }
             }
         }
-        if (firstCall)
-            firstCall = false;
         return closestTarget;
     }
+
+    public static void SetfirstSMTick(bool value) => firstSMTick = value;
 }

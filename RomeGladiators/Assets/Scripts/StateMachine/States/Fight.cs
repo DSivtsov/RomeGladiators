@@ -1,36 +1,21 @@
 ﻿using UnityEngine;
 
-internal class Fight : IState
+internal class Fight : BaseState
 {
-    private readonly Gladiator _gladiator;
-    private readonly Animator _animator;
-    private float _resourcesPerSecond = 1;
+    //private readonly Gladiator _gladiator;
 
-    private float _nextTakeResourceTime;
+    public Fight(Gladiator gladiator) : base(gladiator) { }
 
-    public Fight(Gladiator gladiator)
+    public override void Tick()
     {
-        _gladiator = gladiator;
-    }
-
-    public void Tick()
-    {
-        Debug.LogError($"{this.GetType().Name}");
+        base.Tick();
         if (_gladiator.Target != null)
         {
-            if (_nextTakeResourceTime <= Time.time)
-            {
-                _nextTakeResourceTime = Time.time + (1f / _resourcesPerSecond);
-
-            }
+            _gladiator.Target.DecreaseHP(_gladiator.Attack);
         }
     }
-
-    public void OnEnter()
+    public override void OnExit()
     {
-    }
-
-    public void OnExit()
-    {
+        _gladiator.SetReadyToFight(false);
     }
 }
