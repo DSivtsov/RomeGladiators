@@ -19498,7 +19498,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af74903ac4e0d88488f7ec59432929fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _gladiatorsNumber: 40
+  _gladiatorsNumber: 200
   _groundTransform: {fileID: 1019896991}
   _battfleFieldData: {fileID: 11400000, guid: 52090d375a35f75408e32602539a2497, type: 2}
   _gladiatorSetting: {fileID: 11400000, guid: 85773893eead4014c93431b0efa0fe0e, type: 2}

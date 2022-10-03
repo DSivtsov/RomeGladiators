@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using GMTools;
-using System;
+using System.Linq;
 
 /*
  * Main module:
@@ -36,6 +36,7 @@ public class SingletonGladiatorsManager : SingletonController<SingletonGladiator
     public Material GladiatorDyingMaterial => _gladiatorDying;
     public HashSet<int> DiedGladiatorsInCurrentSMTick => _diedGladiatorsInCurrentSMTick;
     public List<Gladiator> ListGladiators => _listGladiators;
+    public int NumGladiators => _gladiatorsNumber;
 
     private GladiatorsFactory gladiators;
 
@@ -57,9 +58,10 @@ public class SingletonGladiatorsManager : SingletonController<SingletonGladiator
         _seedCharacter = _seedCharacter != 0 ? _seedCharacter : random.Next();
         _gladiatorSetting.Init(_seedCharacter);
         _seedPos = _seedPos != 0 ? _seedPos : random.Next();
-        gladiators = new GladiatorsFactory(_gladiatorsNumber, _seedPos);
+        gladiators = new GladiatorsFactory();
+        WaintingOnArena.InitShiftForUIDGladiator();
         _gameManager = FindObjectOfType<GameManager>();
-        Debug.LogWarning($"_seedCharacter={_seedCharacter} _seedPos={_seedPos}");
+        Debug.LogWarning($"_seedPos={_seedPos} _seedCharacter={_seedCharacter}");
     }
 
     private void Start()
@@ -73,7 +75,7 @@ public class SingletonGladiatorsManager : SingletonController<SingletonGladiator
         if (firstSMTick)
         {
             MoveToClosestTarget.InitTempArraysForFirstStateMachineTick();
-            MoveToClosestTarget.SetfirstSMTick(true);
+            MoveToClosestTarget.SetFirstSMTick(true);
         }
         for (_idxCurrentGladiator = 0; _idxCurrentGladiator < _listGladiatorStateMachine.Count; _idxCurrentGladiator++)
         {
@@ -82,7 +84,7 @@ public class SingletonGladiatorsManager : SingletonController<SingletonGladiator
         if (firstSMTick)
         {
             firstSMTick = false;
-            MoveToClosestTarget.SetfirstSMTick(false);
+            MoveToClosestTarget.SetFirstSMTick(false);
         }
         if (_diedGladiatorsInCurrentSMTick.Count != 0)
             RemodeRecordsDiedGladiators();
@@ -92,14 +94,29 @@ public class SingletonGladiatorsManager : SingletonController<SingletonGladiator
     /// </summary>
     private void RemodeRecordsDiedGladiators()
     {
-        foreach (int idx in _diedGladiatorsInCurrentSMTick)
+        int newNumGladiators = _listGladiators.Count - _diedGladiatorsInCurrentSMTick.Count;
+        List<StateMachine> updatedListGladiatorStateMachine =  new List<StateMachine>(newNumGladiators);
+        List<Gladiator> updatedLstGladiators = new List<Gladiator>(newNumGladiators);
+        //Debug.LogWarning($"newNumGladiators={newNumGladiators} OldCount={_listGladiators.Count} DiedCount={_diedGladiatorsInCurrentSMTick.Count}");
+        //Debug.Log($"delIdx=[{string.Join(" ", _diedGladiatorsInCurrentSMTick)}]"); 
+        for (int oldIdx = 0; oldIdx < _listGladiators.Count; oldIdx++)
         {
-            //To get possibility to stop StateMachine at any time when it will be reasoble
-            _gameManager.CallCoroutineGladiatorDying(_listGladiators[idx].gameObject);
-            _listGladiators.RemoveAt(idx);
-            _listGladiatorStateMachine.RemoveAt(idx);
+            if (!_diedGladiatorsInCurrentSMTick.Contains(oldIdx))
+            {
+                updatedListGladiatorStateMachine.Add(_listGladiatorStateMachine[oldIdx]);
+                updatedLstGladiators.Add(_listGladiators[oldIdx]);
+            }
+            else
+            {
+                //To get possibility to stop StateMachine at any time when it will be reasoble
+                _gameManager.CallCoroutineGladiatorDying(_listGladiators[oldIdx].gameObject);
+            }
         }
-        CountFrame.DebugLogUpdate($"Removed Gladiators records = {_diedGladiatorsInCurrentSMTick.Count}");
+        _listGladiatorStateMachine = updatedListGladiatorStateMachine;
+        _listGladiators = updatedLstGladiators;
+        MoveToClosestTarget.UpdateListGladiators();
+        CountFrame.DebugLogUpdate($"SingletonGladiatorsManager : Removed Gladiators records =" +
+            $" {_diedGladiatorsInCurrentSMTick.Count}");
         _diedGladiatorsInCurrentSMTick.Clear();
     }
     /// <summary>
@@ -108,13 +125,21 @@ public class SingletonGladiatorsManager : SingletonController<SingletonGladiator
     public void PutCurrentGladiatorToRemoveFromListGladiators()
     {
         _diedGladiatorsInCurrentSMTick.Add(_idxCurrentGladiator);
-        CountFrame.DebugLogUpdate($"Gladiators[{_listGladiatorStateMachine[_idxCurrentGladiator].UIDGladiator}] Died");
+        CountFrame.DebugLogUpdate($"SingletonGladiatorsManager :" +
+            $" Gladiators[{_listGladiatorStateMachine[_idxCurrentGladiator].UIDGladiator:00}] Died");
         //After Tick when died the last opponet StateMachine is stopped - Game finish
         if (_listGladiators.Count - _diedGladiatorsInCurrentSMTick.Count == 1)
         {
-            CountFrame.DebugErrorLogUpdate($"Gladiators[{_listGladiatorStateMachine[_idxCurrentGladiator].UIDGladiator}]" +
-                $" is Duncan MacLeod");
-            _gameManager.FinishGame(); 
+            DuncanMacLeod();
         }
+    }
+
+    private void DuncanMacLeod()
+    {
+        CountFrame.DebugErrorLogUpdate(
+            $"Gladiators[{_listGladiatorStateMachine[(_idxCurrentGladiator == 1) ? 0 : 1].UIDGladiator:00}]" +
+            $" is Duncan MacLeod");
+        _gameManager.FinishGame();
+        Debug.LogWarning("StateMachine continue current cycle till end can be used the throw Exeception to evecuate?");
     }
 }

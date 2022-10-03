@@ -28,6 +28,8 @@ public class StateMachine
     private Dictionary<Type, List<Transition>> _transitions = new Dictionary<Type,List<Transition>>();
     private List<Transition> _currentTransitions = new List<Transition>();
 
+    private static List<Transition> EmptyTransitions = new List<Transition>(0);
+
     private readonly Type TypeFinalState = typeof(Died);
     public void StateMachineTick()
     {
@@ -54,6 +56,10 @@ public class StateMachine
             {
                 CountFrame.DebugErrorLogUpdate($"StateMachine : _uid[{_uidGladiator}] _currentTransitions == null");
             } 
+        }
+        else
+        {
+            _currentTransitions = EmptyTransitions;
         }
         _currentState.OnEnter();
     }

@@ -37,11 +37,14 @@ public static class MoveToClosestTarget
         if (firstSMTick)
             CountFrame.DebugLogUpdate("ChooseTarget() : firstCall = true");
         else
-            CountFrame.DebugLogUpdate($"ChooseTarget() : firstCall = false CountGladiatorsCount={_listGladiators.Count}");
+        {
+            CountFrame.DebugLogUpdate($"ChooseTarget() : firstCall = false" +
+            $" CurrentGladiatorCount={_listGladiators.Count} diedGladiator={_diedGladiatorsInCurrentSMTick.Count}"); 
+        }
         Vector3 positionObject = firstSMTick ? tempArr[idxObject] : _listGladiators[idxObject].transform.position;
         float closestTargetDistance = float.MaxValue;
         NavMeshPath Path;
-        Gladiator closestTarget = _listGladiators[0];
+        Gladiator closestTarget = null;
         Path = new NavMeshPath();
         Vector3 position;
         // idxGladiator - index gladiator in current state of _listGladiators
@@ -71,5 +74,8 @@ public static class MoveToClosestTarget
         return closestTarget;
     }
 
-    public static void SetfirstSMTick(bool value) => firstSMTick = value;
+    public static void SetFirstSMTick(bool value) => firstSMTick = value;
+
+    //after dying of gladiators the _listGladiators will be updated
+    public static void UpdateListGladiators() => _listGladiators = SingletonGladiatorsManager.Instance.ListGladiators;
 }

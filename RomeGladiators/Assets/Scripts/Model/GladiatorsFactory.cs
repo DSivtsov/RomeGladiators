@@ -13,9 +13,9 @@ public class GladiatorsFactory
     private BattleField _battleField;
     private GladiatorSettingSO _gladiatorSetting;
 
-    public GladiatorsFactory(int numGladiators, int seedCreatePosGladiators)
+    public GladiatorsFactory()
     {
-        this._numGladiators = numGladiators;
+        _numGladiators = SingletonGladiatorsManager.Instance.NumGladiators;
         _gladiatorSetting = SingletonGladiatorsManager.Instance.GladiatorSetting;
         _battleField = new BattleField();
     }
@@ -36,7 +36,7 @@ public class GladiatorsFactory
             newGladiator.InitGladiator(uid, _gladiatorSetting.GetRandomHealth(), _gladiatorSetting.GetRandomAttackForce());
             _listGladiators.Add(newGladiator);
             _listGladiatorStateMachine.Add(newGladiator.GetStateMachine());
-            CountFrame.DebugLogUpdate($"CreateGladiators() : {newGladiator}");
+            //CountFrame.DebugLogUpdate($"CreateGladiators() : {newGladiator}");
         }
         //CountFrame.DebugLogUpdate($"CreateGladiators() : GetNewGladiatorPos() : allAttemps={_battleField.allAttemps}");
         return (_listGladiators, _listGladiatorStateMachine);
@@ -45,7 +45,7 @@ public class GladiatorsFactory
     [System.Diagnostics.Conditional("TRACE")]
     private void SetNameGladiatorGO(Gladiator newGladiator, int uid)
     {
-        newGladiator.name += $"[{uid:00}]";
+        newGladiator.name = $"Gladiator[{uid:00}]";
     }
 }
 

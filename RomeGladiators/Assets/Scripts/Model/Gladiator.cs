@@ -22,7 +22,7 @@ public class Gladiator : MonoBehaviour
     public Gladiator Target { get; set; }
 
     public int Attack => _attackForce;
-    public bool IsDied => _health == 0;
+    public bool IsDied { get; private set; }
 
     public bool ReadyToFight { get; private set; }
 
@@ -46,12 +46,11 @@ public class Gladiator : MonoBehaviour
             return Target != null &&
                 Vector3.Distance(transform.position, Target.transform.position) < DistanceToFight;
         };
-        Func<bool> Victory() => () => Target == null;
-        Func<bool> WasKilled() => () => IsDied;
+        //Func<bool> Victory() => () => Target == null;
+        Func<bool> WasKilled() => () => _health == 0;
         // initially Func<bool> TargetReadyToFight() => () => Target.ReadyToFight;
         Func<bool> TargetReadyToFight() => () => Target != null && Target.ReadyToFight;
         Func<bool> TargetDied() => () => Target.IsDied;
-        //Func<bool> WasDied() => () => dying.isDied();
 
         _stateMachine.AddTransition(searchEnemy, moveToEnemy, HasTarget(),"To=moveToEnemy, HasTarget()");
 
@@ -61,10 +60,9 @@ public class Gladiator : MonoBehaviour
         _stateMachine.AddTransition(waitReadyToFight, fight, TargetReadyToFight(), "To=fight, TargetReadyToFight()");
         _stateMachine.AddTransition(waitReadyToFight, searchEnemy, TargetDied(), "To=searchEnemy, TargetDied()");
 
-        _stateMachine.AddTransition(fight, searchEnemy, Victory(), "To=searchEnemy, Victory()");
+        //_stateMachine.AddTransition(fight, searchEnemy, Victory(), "To=searchEnemy, Victory()");
+        _stateMachine.AddTransition(fight, searchEnemy, TargetDied(), "To=searchEnemy, TargetDied()");
         _stateMachine.AddTransition(fight, died, WasKilled(), "To=died, WasKilled()");
-
-        //_stateMachine.AddTransition(dying, Exit, WasDied(), "To=Exit, WasDied()");
 
         _stateMachine.SetState(searchEnemy);
     }
@@ -105,9 +103,11 @@ public class Gladiator : MonoBehaviour
     }
     public override string ToString()
     {
-        return $"Gladiator[{_uid}] HP[{_health}] AT[{_attackForce}]";
+        return $"Gladiator[{_uid:00}] HP[{_health}] AT[{_attackForce}]";
     }
 
     public StateMachine GetStateMachine() => _stateMachine;
+
+    public void SetImDied() => IsDied = true;
 }
 

@@ -2,9 +2,8 @@
 using UnityEngine.AI;
 using System.Collections;
 
-internal class MoveToEnemy : BaseState
+public class MoveToEnemy : BaseState
 {
-    //private readonly Gladiator _gladiator;
     private readonly NavMeshAgent _navMeshAgent;
     private Vector3 _lastPosition = Vector3.zero;
 
@@ -30,18 +29,16 @@ internal class MoveToEnemy : BaseState
 
     public override void OnEnter()
     {
-        base.OnEnter();
-        //TimeStuck = 0f;
         _navMeshAgent.enabled = true;
         _navMeshAgent.SetDestination(_gladiator.Target.transform.position);
         previousTargetPosition = _gladiator.Target.transform.position;
+        CountFrame.DebugLogUpdate($"{this} : after OnEnter()");
     }
 
     public override void OnExit()
     {
-        base.OnExit();
         _navMeshAgent.enabled = false;
-        //_animator.SetFloat(Speed, 0f);
+        CountFrame.DebugLogUpdate($"{this} : after OnExit()");
     }
 
     void UpdateTargetIfDemanding(Transform target)
