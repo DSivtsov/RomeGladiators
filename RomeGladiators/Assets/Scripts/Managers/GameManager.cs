@@ -3,6 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+ * Supporing module
+ * To have a possibility to stop the StateMachine completly don't breake work of running processes, like Coroutune
+ */
 public class GameManager : MonoBehaviour
 {
     private const int DyingTime = 5;

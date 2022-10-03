@@ -3,7 +3,14 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-
+/*
+ * Main character class put to every character through Prefab
+ * Contains:
+ * - current chracterestic of character
+ * - state, transation with conditions initialized for every character to reduce overhead at calling with parameters
+ * - character is moving by navMeshAgent
+ * - reactions on actions of other characters
+ */
 public class Gladiator : MonoBehaviour
 {
     private const float DistanceToFight = 1.5f;
@@ -41,7 +48,8 @@ public class Gladiator : MonoBehaviour
         };
         Func<bool> Victory() => () => Target == null;
         Func<bool> WasKilled() => () => IsDied;
-        Func<bool> TargetReadyToFight() => () => Target.ReadyToFight;
+        // initially Func<bool> TargetReadyToFight() => () => Target.ReadyToFight;
+        Func<bool> TargetReadyToFight() => () => Target != null && Target.ReadyToFight;
         Func<bool> TargetDied() => () => Target.IsDied;
         //Func<bool> WasDied() => () => dying.isDied();
 

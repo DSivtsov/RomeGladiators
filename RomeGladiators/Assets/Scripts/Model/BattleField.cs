@@ -1,7 +1,9 @@
 ﻿#undef TRACE
 using UnityEngine;
 using UnityEngine.AI;
-
+/*
+ * Support class to get position for characters
+ */
 public class BattleField
 {
     private const int GladiatorYPos = 1;

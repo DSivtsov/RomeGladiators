@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
+/*
+ * Ramdomly placed chracters on field and select the parameters for them (HP/ATK)
+ */
 public class GladiatorsFactory
 {
     private int _numGladiators;
@@ -16,7 +19,10 @@ public class GladiatorsFactory
         _gladiatorSetting = SingletonGladiatorsManager.Instance.GladiatorSetting;
         _battleField = new BattleField();
     }
-
+    /// <summary>
+    /// Placed chracters on field and select the parameters for them
+    /// </summary>
+    /// <returns></returns>
     public (List<Gladiator>, List<StateMachine>) CreateGladiators()
     {
         List<StateMachine> _listGladiatorStateMachine = new List<StateMachine>(_numGladiators);
